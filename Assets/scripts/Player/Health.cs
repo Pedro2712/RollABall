@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static Unity.VisualScripting.Member;
@@ -14,12 +15,14 @@ public class Health : MonoBehaviour
     public Sprite fullHeart;
     public Sprite emptyHeary;
 
-    private float immortalDuration = 5.0f; // Dura��o da imortalidade em segundos.
+    private float immortalDuration = 2.0f; // Dura��o da imortalidade em segundos.
     private float blinkInterval = 0.2f; // Intervalo de piscar em segundos.
     private float blinkTimer = 0.0f; // Cron�metro para controlar o piscar.
     private bool isImmortal = false;
 
+    private Rigidbody rb;
     private Renderer playerRenderer;
+    public CameraShake cameraShake;
 
     [SerializeField] private AudioClip _deathMusic;
     [SerializeField] private AudioSource _source;
@@ -28,12 +31,22 @@ public class Health : MonoBehaviour
     private void Start()
     {
         playerRenderer = GetComponent<Renderer>();
+        rb = GetComponent<Rigidbody>();
+
+        isImmortal = true;
+        StartCoroutine(DisableImmortality());
     }
 
     public void TakeDamage()
     {
         if (!isImmortal)
         {
+            if (cameraShake != null)
+            {
+                cameraShake.ShakeCamera();
+            }
+
+
             _source.PlayOneShot(_deathMusic);
             life--;
 
@@ -58,6 +71,14 @@ public class Health : MonoBehaviour
         isImmortal = false;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            TakeDamage();
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -80,6 +101,13 @@ public class Health : MonoBehaviour
             {
                 hearts[i].enabled = false;
             }
+        }
+
+        if (transform.position.y <= -5)
+        {
+            rb.velocity = Vector3.zero;
+            transform.position = new Vector3(0, 2f, 0);
+            TakeDamage();
         }
     }
 }

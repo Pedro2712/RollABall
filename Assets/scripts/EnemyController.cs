@@ -6,9 +6,9 @@ public class EnemyController : MonoBehaviour
 {
     private Rigidbody rb;
     public float forceMagnitude = 50.0f; // Magnitude da força inicial.
-    public float roomWidth = 20.0f;
-    public float roomHeight = 20.0f;
-    public float changePositionInterval = 10.0f;
+    private float roomWidth = 30.0f;
+    private float roomHeight = 30.0f;
+    public float changePositionInterval = 5.0f;
     public float wallProximityThreshold = 1.0f; // Distância das paredes que aciona o movimento para o centro.
 
     private float timeUntilChangePosition;
@@ -47,7 +47,7 @@ public class EnemyController : MonoBehaviour
 
     private void ApplyRandomForce()
     {
-        Vector3 randomForce = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f)).normalized * forceMagnitude;
+        Vector3 randomForce = new Vector3(UnityEngine.Random.Range(-2f, 2f), 0f, UnityEngine.Random.Range(-2f, 2f)).normalized * forceMagnitude;
         rb.AddForce(randomForce, ForceMode.Impulse);
     }
 }
