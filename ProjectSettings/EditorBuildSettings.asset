@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/minigame.unity
     guid: 15085406b94e6e84ebd28efdbf246bed
+  - enabled: 1
+    path: Assets/Scenes/deadEnd.unity
+    guid: 2bdeb46170f8ab642be5dac113bd6709
   m_configObjects: {}

@@ -19,11 +19,12 @@ public class GetPickup : MonoBehaviour
     [SerializeField] private AudioClip _timeUp;
 
     private GameObject newPickup;
+
     private float roomWidth = 30.0f;
     private float roomHeight = 30.0f;
     public float wallProximityThreshold = 1.0f;
 
-    private int count = 0;
+    public static int count = 0;
     private float x;
     private float y;
 
@@ -38,10 +39,13 @@ public class GetPickup : MonoBehaviour
     private int potionLifeCount = 0;
     private int maxSpawnCount = 3;
 
+
     private void Start()
     {
         x = (roomWidth / 2) - wallProximityThreshold;
         y = (roomHeight / 2) - wallProximityThreshold;
+
+        count = 0;
 
         SetCountText();
 
@@ -109,7 +113,7 @@ public class GetPickup : MonoBehaviour
             _source.PlayOneShot(_timeUp);
 
 
-            clock.IncreaseTime(2);
+            clock.IncreaseTime(5);
         }
 
         if (other.gameObject.CompareTag("PotionLife"))
@@ -118,7 +122,6 @@ public class GetPickup : MonoBehaviour
             if (potionLifeCount < 0)
                 potionLifeCount= 0;
             Destroy(other.gameObject);
-            clock.IncreaseTime(10);
             _source.PlayOneShot(_lifeUp);
 
             health.RecoverLife();

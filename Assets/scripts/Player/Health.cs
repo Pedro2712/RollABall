@@ -27,6 +27,8 @@ public class Health : MonoBehaviour
     [SerializeField] private AudioClip _deathMusic;
     [SerializeField] private AudioSource _source;
 
+    [SerializeField] private Demo demo;
+
     ParticleSystem blood;
 
     private void Start()
@@ -52,6 +54,9 @@ public class Health : MonoBehaviour
 
             _source.PlayOneShot(_deathMusic);
             life--;
+            if (life == 0) {
+                demo.Dead();
+            }
 
 
             isImmortal = true;

@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Demo : MonoBehaviour
 {
 	[SerializeField] SandClock clock;
+    [SerializeField] private AudioClip _DeadMusic;
+    [SerializeField] private AudioSource _source;
 
     void Start ()
 	{
@@ -15,18 +18,23 @@ public class Demo : MonoBehaviour
 	
 	void OnRoundStart (int round)
 	{
-		Debug.Log ("Round Start " + round);
+		//Debug.Log ("Round Start " + round);
 	}
 	
 	void OnRoundEnd (int round)
 	{
-		Debug.Log ("Round End " + round);
+		//Debug.Log ("Round End " + round);
 	}
 	
 	void OnAllRoundsCompleted ()
 	{
-		Debug.Log ("......Time is over...........");
-	}
+		Dead();
+    }
+
+	public void Dead() {
+        _source.PlayOneShot(_DeadMusic);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
 	
 	void OnDestroy ()
 	{
