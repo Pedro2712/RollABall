@@ -45,7 +45,7 @@ public class SandClock : MonoBehaviour
 
         totalRounds -= Time.deltaTime;
 
-        if (totalRounds <= 5 && _timeAudio)
+        if (totalRounds <= 10 && _timeAudio)
         {
             _timeAudio = false;
             _source.clip = _time;
@@ -54,7 +54,7 @@ public class SandClock : MonoBehaviour
             // Inicie a reprodução.
             _source.Play();
         }
-        else if (totalRounds > 5 && !_timeAudio)
+        else if (totalRounds > 10 && !_timeAudio)
         {
             _timeAudio = true;
             _source.clip = _time;

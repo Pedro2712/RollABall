@@ -7,6 +7,8 @@ TagManager:
   - Pickup
   - Enemy
   - Ground
+  - hourGlass
+  - PotionLife
   layers:
   - Default
   - TransparentFX

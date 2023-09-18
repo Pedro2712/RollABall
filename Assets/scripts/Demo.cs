@@ -3,8 +3,8 @@
 public class Demo : MonoBehaviour
 {
 	[SerializeField] SandClock clock;
-	
-	void Start ()
+
+    void Start ()
 	{
 		clock.onRoundStart += OnRoundStart;
 		clock.onRoundEnd += OnRoundEnd;

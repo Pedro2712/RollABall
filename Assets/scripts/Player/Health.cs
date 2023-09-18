@@ -27,11 +27,14 @@ public class Health : MonoBehaviour
     [SerializeField] private AudioClip _deathMusic;
     [SerializeField] private AudioSource _source;
 
+    ParticleSystem blood;
 
     private void Start()
     {
         playerRenderer = GetComponent<Renderer>();
         rb = GetComponent<Rigidbody>();
+        blood = GetComponent<ParticleSystem>();
+        blood.Stop();
 
         isImmortal = true;
         StartCoroutine(DisableImmortality());
@@ -75,7 +78,16 @@ public class Health : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
+            if (!isImmortal) {
+                blood.Play();
+            }
             TakeDamage();
+        }
+    }
+
+    public void RecoverLife() {
+        if (life < 4) {
+            life++;
         }
     }
 
@@ -103,7 +115,7 @@ public class Health : MonoBehaviour
             }
         }
 
-        if (transform.position.y <= -5)
+        if (transform.position.y <= -10)
         {
             rb.velocity = Vector3.zero;
             transform.position = new Vector3(0, 2f, 0);

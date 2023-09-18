@@ -2,55 +2,92 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static Unity.VisualScripting.Member;
 
 public class GetPickup : MonoBehaviour
 {
     public TextMeshProUGUI countText;
-
-    public GameObject winTextObject;
     public GameObject enemyPrefab;
     public GameObject pickupPrefab;
+    public GameObject hourGlassPrefab;
+    public GameObject potionLife;
 
-    [SerializeField] private AudioClip _pickupMusic;
+    [SerializeField] SandClock clock;
+    [SerializeField] Health health;
     [SerializeField] private AudioSource _source;
+    [SerializeField] private AudioClip _pickupMusic;
+    [SerializeField] private AudioClip _lifeUp;
+    [SerializeField] private AudioClip _timeUp;
 
-
+    private GameObject newPickup;
     private float roomWidth = 30.0f;
     private float roomHeight = 30.0f;
-    public float wallProximityThreshold = 1.0f; // Distância das paredes que aciona o movimento para o centro.
-
+    public float wallProximityThreshold = 1.0f;
 
     private int count = 0;
-    // Start is called before the first frame update
-    void Start()
+    private float x;
+    private float y;
+
+    public float minSpawnDelay = 30f; // Tempo mínimo de espera entre spawns
+    public float maxSpawnDelay = 60f; // Tempo máximo de espera entre spawns
+
+
+    private float nextHourGlassSpawnTime;
+    private float nextPotionLifeSpawnTime;
+
+    private int hourGlassCount = 0;
+    private int potionLifeCount = 0;
+    private int maxSpawnCount = 3;
+
+    private void Start()
     {
+        x = (roomWidth / 2) - wallProximityThreshold;
+        y = (roomHeight / 2) - wallProximityThreshold;
+
         SetCountText();
 
-        winTextObject.SetActive(false);
 
-        Instantiate(pickupPrefab, new Vector3(UnityEngine.Random.Range(-10f, 10f), 0.5f, UnityEngine.Random.Range(-10f, 10f)), Quaternion.identity);
+        SpawnObjects(pickupPrefab, 1);
     }
 
-    void SetCountText()
+    public GameObject PositionPickup()
     {
-        countText.text = "Count: " + count.ToString();
-        if (count >= 10)
-        {
-            winTextObject.SetActive(true);
+        return newPickup;
+    }
 
+    private void SpawnObjects(GameObject prefab, int countToSpawn)
+    {
+        for (int i = 0; i < countToSpawn; i++)
+        {
+            Vector3 position = GenerateRandomPosition();
+            GameObject spawnedObject = Instantiate(prefab, position, Quaternion.identity);
+
+            // Verifica se o objeto criado é um pickupPrefab
+            if (prefab == pickupPrefab)
+            {
+                newPickup = spawnedObject;
+            }
         }
     }
 
-    // Update is called once per frame
+    private Vector3 GenerateRandomPosition()
+    {
+        float randomX = Random.Range(-x, x);
+        float randomY = 0.5f;
+        float randomZ = Random.Range(-y, y);
+        return new Vector3(randomX, randomY, randomZ);
+    }
+
+    private void SetCountText()
+    {
+        countText.text = count.ToString();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Pickup"))
         {
-            float x = (roomWidth / 2) - wallProximityThreshold;
-            float y = (roomHeight / 2) - wallProximityThreshold;
-            Instantiate(pickupPrefab, new Vector3(UnityEngine.Random.Range(-x, x), 0.5f, UnityEngine.Random.Range(-y, y)), Quaternion.identity);
-            other.gameObject.SetActive(false);
+            SpawnObjects(pickupPrefab, 1);
+            Destroy(other.gameObject);
             count++;
             _source.PlayOneShot(_pickupMusic);
 
@@ -58,8 +95,66 @@ public class GetPickup : MonoBehaviour
 
             if (count <= 5)
             {
-                Instantiate(enemyPrefab, new Vector3(UnityEngine.Random.Range(-x, x), 0.5f, UnityEngine.Random.Range(-y, y)), Quaternion.identity);
+                SpawnObjects(enemyPrefab, 1);
             }
         }
+
+        if (other.gameObject.CompareTag("hourGlass"))
+        {
+            hourGlassCount--;
+            if (hourGlassCount < 0)
+                hourGlassCount= 0;
+            
+            Destroy(other.gameObject);
+            _source.PlayOneShot(_timeUp);
+
+
+            clock.IncreaseTime(2);
+        }
+
+        if (other.gameObject.CompareTag("PotionLife"))
+        {
+            potionLifeCount--;
+            if (potionLifeCount < 0)
+                potionLifeCount= 0;
+            Destroy(other.gameObject);
+            clock.IncreaseTime(10);
+            _source.PlayOneShot(_lifeUp);
+
+            health.RecoverLife();
+        }
+    }
+
+    private void ScheduleNextHourGlassSpawn()
+    {
+        nextHourGlassSpawnTime = Time.time + Random.Range(minSpawnDelay, maxSpawnDelay);
+    }
+
+    private void ScheduleNextPotionLifeSpawn()
+    {
+        nextPotionLifeSpawnTime = Time.time + Random.Range(minSpawnDelay, maxSpawnDelay);
+    }
+
+    private void Update()
+    {
+        // Verificar se é hora de spawnar hourGlassPrefab
+        if (Time.time >= nextHourGlassSpawnTime)
+        {
+            int random = Mathf.Clamp(Random.Range(1, 3), 0, maxSpawnCount - hourGlassCount);
+            SpawnObjects(hourGlassPrefab, random);
+            ScheduleNextHourGlassSpawn();
+            hourGlassCount += random;
+        }
+
+        // Verificar se é hora de spawnar potionLife
+        if (Time.time >= nextPotionLifeSpawnTime)
+        {
+            int random = Mathf.Clamp(Random.Range(1, 3), 0, maxSpawnCount - potionLifeCount);
+            SpawnObjects(potionLife, random);
+            ScheduleNextPotionLifeSpawn();
+            potionLifeCount += random;
+        }
+
+
     }
 }

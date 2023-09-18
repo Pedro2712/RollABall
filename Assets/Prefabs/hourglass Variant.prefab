@@ -98,6 +98,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: hourglass Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 6913458815422837847, guid: 81dde4db9e926495bbfae9480c3e2894,
+        type: 3}
+      propertyPath: m_TagString
+      value: hourGlass
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -156,3 +161,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5751879920697eb43a019bab23110ad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationDirection: {x: 0, y: 50, z: 0}
